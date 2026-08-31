@@ -1,45 +1,51 @@
-# 集約と整合性
+# 集約に関する型設計
 
-整合性とは、ドメインモデルの複数部分が同じ事実について一致していることを指す。何をどの時点までに一致させるかは、技術ではなく業務要件として確認する。
+このガイドラインは、集約に関して型で表現できる規則だけを扱う。トランザクション、永続化、メッセージ配送、結果整合性は扱わない。
 
-集約とは、一つの整合性境界として更新し、原子的に保存するドメインオブジェクトのまとまりを指す。外部からの更新は集約ルートを通す。
+## 1. 同時に整合させるデータを一つの集約型にまとめる
 
-## 設計手順
+関連するデータの間で成立させる業務規則を明記する。その規則が破られた状態を具体例として示す。
 
-1. 一致させる事実と、不一致となる具体例を列挙する。
-2. 即時に一致させる必要があるか、許容される不一致の時間を確認する。
-3. 元データから導出できる値は、保持せず計算できないか検討する。
-4. 導出値を保持する場合は、元データと同じ集約に含める。
-5. 整合性を保存する更新操作を集約ルートに置く。
-6. 集約境界とトランザクション境界を一致させる。
-7. 集約をまたぐ変更では、メッセージと結果整合性を検討する。
-8. 複数集約の同時更新が不可欠なら、集約境界または業務概念を再検討する。
+例えば、注文の請求金額は全注文明細の合計と一致させる。明細の合計が3,000円で、請求金額が2,500円なら、この業務規則は破られている。
 
-## 集約内のガイドライン
-
-- 重複した事実を保持する前に、元データから導出する。
-- 子要素を外部から直接更新させない。
-- 集約ルートの操作で、関連する値を同時に更新する。
-- 集約全体を一つの原子的な永続化単位として保存する。
-- 復元時に不整合なデータを検出するか、導出値を再計算する。
-- 不変な更新を使う場合も、整合性を保つ操作だけを公開する。
-
-## TypeScriptによる例
+このように、一つの操作によって整合させる必要があるデータは、一つの集約型に含める。注文明細と請求金額を別々の型として外部へ公開しない。
 
 ```ts
 type NonEmptyLines = readonly [OrderLine, ...OrderLine[]];
 
+type OrderState = Readonly<{
+  id: OrderId;
+  lines: NonEmptyLines;
+  amountToBill: Money;
+}>;
+```
+
+## 2. 整合性を保つ関数だけを公開する
+
+集約型を構成する値を、外部から個別に変更させない。集約全体を受け取り、業務規則を保った新しい集約全体を返す関数だけを公開する。
+
+集約型のコンストラクタは非公開にする。生成関数と更新関数は、関連する値を同時に計算する。
+
+```ts
+type Result<T, E> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: E };
+
 export class Order {
   private constructor(
+    readonly id: OrderId,
     readonly lines: NonEmptyLines,
     readonly amountToBill: Money,
   ) {}
 
-  static create(lines: NonEmptyLines): Order {
-    return new Order(lines, sumLinePrices(lines));
+  static create(id: OrderId, lines: NonEmptyLines): Order {
+    return new Order(id, lines, sumLinePrices(lines));
   }
 
-  changeLinePrice(lineId: OrderLineId, newPrice: Money): Result<Order, "not-found"> {
+  changeLinePrice(
+    lineId: OrderLineId,
+    newPrice: Money,
+  ): Result<Order, "not-found"> {
     const changed = replaceLinePrice(this.lines, lineId, newPrice);
 
     if (!changed.ok) {
@@ -48,46 +54,67 @@ export class Order {
 
     return {
       ok: true,
-      value: new Order(changed.value, sumLinePrices(changed.value)),
+      value: new Order(
+        this.id,
+        changed.value,
+        sumLinePrices(changed.value),
+      ),
     };
   }
 }
 ```
 
-`amountToBill`を外部から変更させない。明細を変更する操作が、合計金額も同時に再計算する。
+`amountToBill`だけを変更する関数や、`OrderLine`だけを置き換える関数を、集約の外部へ公開しない。
 
-## 集約間のガイドライン
+## 3. 独立した業務概念を新しいエンティティ型として表現する
 
-- 原則として、一つのトランザクションでは一つの集約を更新する。
-- 別の集約や境界づけられたコンテキストへ、内部オブジェクトを直接公開しない。
-- 集約間の連携には識別子とドメインイベントを使う。
-- 結果整合性を採用する場合は、最終的に一致させる責任を明示する。
-- メッセージの再試行、重複処理、消失、順序変更を想定する。
-- 必要に応じて照合処理または補償処理を設計する。
+複数の既存エンティティを変更する処理が、独自の識別子、属性、業務規則、またはライフサイクルを持つか確認する。該当する場合は、その処理を既存型の操作だけで表現せず、新しいエンティティ型として表現する。
 
-結果整合性は、整合性を任意にすることではない。許容された時間内に、定義された状態へ収束させる。
+例えば、口座間の送金が送金識別子を持つなら、二つの口座を変更するだけの処理ではなく、`MoneyTransfer`というエンティティとして表現する。
 
-## 集約境界を再検討する兆候
+```ts
+type MoneyTransfer = Readonly<{
+  id: MoneyTransferId;
+  fromAccount: AccountId;
+  toAccount: AccountId;
+  amount: PositiveMoney;
+}>;
+```
 
-- 二つ以上の集約を、毎回同じトランザクションで変更している。
-- 一方の集約が、他方の内部状態を知る必要がある。
-- 複数集約にまたがる処理自体が、識別子とライフサイクルを持つ。
-- 同じ整合性規則が、複数の更新経路へ重複している。
+既存の型を再利用することより、業務上存在する概念を型として明示することを優先する。
 
-処理自体が業務上の実体なら、送金を`MoneyTransfer`として表現するように、新しいエンティティまたは集約を導入する。複数集約で共通する単一値の制約は、共有する制約付き型として表現する。型にできない規則は、状態を持たない共通検証関数として共有する。
+## 4. 共通する制約を制約付き型として共有する
+
+複数の集約が同じ値の制約を必要とする場合は、同じ検証処理を各集約へ重複させず、制約を表す型を共有する。
+
+例えば、複数の集約で金額が0以上でなければならない場合は、`number`と個別の検証処理ではなく、`NonNegativeMoney`を使う。
+
+```ts
+export class NonNegativeMoney {
+  private constructor(readonly value: number) {}
+
+  static create(
+    value: number,
+  ): Result<NonNegativeMoney, "not-finite" | "negative"> {
+    if (!Number.isFinite(value)) {
+      return { ok: false, error: "not-finite" };
+    }
+
+    if (value < 0) {
+      return { ok: false, error: "negative" };
+    }
+
+    return { ok: true, value: new NonNegativeMoney(value) };
+  }
+}
+```
+
+共通する業務規則だけを共有する。名前が似ていても、不変条件が異なる値を同じ型にまとめない。
 
 ## レビュー項目
 
-- 同じ事実を複数箇所へ重複して保持していないか。
-- 導出値と元データを別々に変更できないか。
-- 子要素を集約ルートを通さず更新できないか。
-- 集約境界とトランザクション境界が一致しているか。
-- 複数集約の即時整合性に、業務上の根拠があるか。
-- 結果整合性で許容される不一致の時間が定義されているか。
-- 再試行が同じ処理を重複適用しないか。
-- メッセージ消失を検出し、再送または補償できるか。
-- 複数集約の同時更新が、新しい業務概念の存在を示していないか。
-
-## 型だけでは保証できない範囲
-
-型は集約の構造と公開操作を制限できる。トランザクションの原子性、メッセージ配送、同時更新の競合、結果整合性の収束は、永続化と実行基盤を含めて検証する。
+- 同時に整合させるデータが、別々の型として個別に更新可能になっていないか。
+- 集約の内部値を、整合性を保つ関数を通さず変更できないか。
+- 複数の既存エンティティにまたがる処理が、独立した業務概念を示していないか。
+- 同じ値の制約が複数の集約に重複していないか。
+- 不変条件の異なる値を、再利用のために同じ制約付き型へまとめていないか。

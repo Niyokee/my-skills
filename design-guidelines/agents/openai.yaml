@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Guidelines"
+  short_description: "業務整合性を集約境界と更新方式から設計し、実装とレビューに適用する"
+  default_prompt: "$design-guidelines を使って、集約境界と整合性の設計をレビューしてください。"
