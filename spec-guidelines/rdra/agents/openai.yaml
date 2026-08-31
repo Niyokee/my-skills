@@ -1,0 +1,4 @@
+interface:
+  display_name: "RDRA要件モデリング"
+  short_description: "RDRAで価値からシステムまでを一貫してモデリングする"
+  default_prompt: "$rdra を使って、対象業務のRDRA要件モデルを作成してください。"
