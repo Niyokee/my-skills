@@ -2,21 +2,21 @@
 
 Codex で要件定義とドメイン設計を支援する、個人用のスキル集です。
 
-このリポジトリには、RDRA（Relationship Driven Requirement Analysis）による要件モデリング、業務規則を型で保証するための設計指針、集約境界と整合性の設計指針を収録しています。
+このリポジトリには、RDRA（Relationship Driven Requirement Analysis）による要件モデリング、業務規則を値・状態・ワークフローの型で保証するための設計指針、集約境界・整合性・外部境界の設計指針を収録しています。
 
 ## 収録スキル
 
 | スキル | 配置場所 | 用途 |
 | --- | --- | --- |
 | `rdra` | [`spec-guidelines/rdra`](spec-guidelines/rdra) | 要求、業務、ユースケース、情報、状態の関係を整理し、要件の抜け漏れや矛盾を確認します。 |
-| `type-guidelines` | [`type-guidelines`](type-guidelines) | 業務上の不変条件を、制約付きの値、状態、集約型として設計またはレビューします。 |
-| `design-guidelines` | [`design-guidelines`](design-guidelines) | 集約境界、更新責任、トランザクション、結果整合性を設計またはレビューします。 |
+| `type-guidelines` | [`type-guidelines`](type-guidelines) | 業務上の不変条件を、制約付きの値、状態、集約型、ワークフローの型として設計またはレビューします。 |
+| `design-guidelines` | [`design-guidelines`](design-guidelines) | 集約境界、更新責任、トランザクション、結果整合性、ドメインと外部との境界を設計またはレビューします。 |
 
 3種類のスキルは、次の範囲を担当します。
 
 1. `rdra` が、システムに必要な価値、業務、ユースケース、情報、状態を明らかにします。
-2. `type-guidelines` が、明らかになった業務規則のうち、型で保証できる範囲を扱います。
-3. `design-guidelines` が、永続化や複数集約の連携を含む、実行時の整合性を扱います。
+2. `type-guidelines` が、明らかになった業務規則のうち、値、状態、集約、ワークフローの型で保証できる範囲を扱います。
+3. `design-guidelines` が、永続化、外部との変換、複数集約の連携を含む、実行時の整合性を扱います。
 
 ## 使い方
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Type Guidelines"
-  short_description: "業務上の不変条件を型と集約境界で設計し、実装とレビューに適用する"
+  short_description: "業務規則を値・状態・ワークフローの型として設計し、既存コードをレビューする"
   default_prompt: "$type-guidelines を使って、ドメイン型の完全性と整合性をレビューしてください。"

@@ -1,6 +1,6 @@
 ---
 name: design-guidelines
-description: 業務規則に基づいて集約境界、更新責任、トランザクション境界、集約間の結果整合性を設計・実装・レビューする。導出値の重複保持、集約ルートを通さない更新、複数集約の同時更新、ドメインイベント、照合処理、補償処理を扱う場合に使用する。
+description: 業務規則に基づいて集約境界、更新責任、トランザクション境界、集約間の結果整合性、ドメインと外部との境界を設計・実装・レビューする。導出値の重複保持、集約ルートを通さない更新、複数集約の同時更新、ドメインイベント、照合処理、補償処理、転送用の型への変換、永続化の配置を扱う場合に使用する。
 ---
 
 # Design Guidelines
@@ -18,7 +18,10 @@ description: 業務規則に基づいて集約境界、更新責任、トラン�
 
 ## 参照先の選択
 
-複数データの一致、導出値、集約ルート、原子的な保存、複数集約の更新、結果整合性を扱う場合は、[references/aggregate-consistency.md](references/aggregate-consistency.md)を全文読む。
+依頼に必要な参照ファイルだけを全文読む。
+
+- 複数データの一致、導出値、集約ルート、原子的な保存、複数集約の更新、結果整合性を扱う場合は、[references/aggregate-consistency.md](references/aggregate-consistency.md)を全文読む。
+- ドメイン型と転送用の型の分離、直列化、復元時の検証、入出力の配置、更新と読み取りの分離を扱う場合は、[references/boundary-io.md](references/boundary-io.md)を読む。
 
 ## 作業手順
 
