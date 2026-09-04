@@ -23,7 +23,7 @@ npx skills list -g
 GitHubに公開された最新版へ更新する場合は、次のコマンドを実行します。
 
 ```bash
-npx skills update rdra data-modeling-interview type-guidelines design-guidelines -g
+npx skills update rdra data-modeling-guidelines type-guidelines design-guidelines -g
 ```
 
 ## 収録スキル
@@ -31,14 +31,14 @@ npx skills update rdra data-modeling-interview type-guidelines design-guidelines
 | スキル | 配置場所 | 用途 |
 | --- | --- | --- |
 | `rdra` | [`skills/rdra`](skills/rdra) | 要求、業務、ユースケース、情報、状態の関係を整理し、要件の抜け漏れや矛盾を確認します。 |
-| `data-modeling-interview` | [`skills/data-modeling-interview`](skills/data-modeling-interview) | 関係者への対話から概念データモデルを作り、データベース設計への変換、レビュー、設計指針の策定を行います。 |
+| `data-modeling-guidelines` | [`skills/data-modeling-guidelines`](skills/data-modeling-guidelines) | 関係者への対話から概念データモデルを作り、データベース設計への変換、レビュー、設計指針の策定を行います。 |
 | `type-guidelines` | [`skills/type-guidelines`](skills/type-guidelines) | 業務上の不変条件を、制約付きの値、状態、集約型、ワークフローの型として設計またはレビューします。 |
 | `design-guidelines` | [`skills/design-guidelines`](skills/design-guidelines) | 集約境界、更新責任、トランザクション、結果整合性、ドメインと外部との境界を設計またはレビューします。 |
 
 4種類のスキルは、次の範囲を担当します。
 
 1. `rdra` が、システムに必要な価値、業務、ユースケース、情報、状態を明らかにします。
-2. `data-modeling-interview` が、業務上の情報構造と制約を対話で明らかにし、概念データモデルから論理・物理データベース設計へ変換します。
+2. `data-modeling-guidelines` が、業務上の情報構造と制約を対話で明らかにし、概念データモデルから論理・物理データベース設計へ変換します。
 3. `type-guidelines` が、明らかになった業務規則のうち、値、状態、集約、ワークフローの型で保証できる範囲を扱います。
 4. `design-guidelines` が、永続化、外部との変換、複数集約の連携を含む、実行時の整合性を扱います。
 
@@ -57,7 +57,7 @@ $rdra を使って、受注管理システムの要件を整理してくださ�
 ```
 
 ```text
-$data-modeling-interview を使って、受注業務の具体例から概念データモデルを作成してください。
+$data-modeling-guidelines を使って、受注業務の具体例から概念データモデルを作成してください。
 ```
 
 ```text
@@ -83,7 +83,7 @@ my-skills/
     │   ├── SKILL.md
     │   ├── agents/openai.yaml
     │   └── references/
-    ├── data-modeling-interview/
+    ├── data-modeling-guidelines/
     │   ├── SKILL.md
     │   ├── agents/openai.yaml
     │   └── references/

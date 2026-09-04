@@ -1,0 +1,4 @@
+interface:
+  display_name: "Data Modeling Guidelines"
+  short_description: "対話から概念データモデルとデータベース設計を作成・レビューする"
+  default_prompt: "$data-modeling-guidelines を使って、関係者への質問から対象業務の概念データモデルを作成してください。"
