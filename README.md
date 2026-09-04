@@ -2,11 +2,11 @@
 
 Agent Skills（AIエージェントに作業手順と参照資料を追加する共通形式）に対応するAIエージェントで、要件定義とドメイン設計を支援するスキル集です。
 
-このリポジトリには、RDRA（Relationship Driven Requirement Analysis）による要件モデリング、業務規則を値・状態・ワークフローの型で保証するための設計指針、集約境界・整合性・外部境界の設計指針を収録しています。
+このリポジトリには、RDRA（Relationship Driven Requirement Analysis）による要件モデリング、対話型データモデリング、業務規則を値・状態・ワークフローの型で保証するための設計指針、集約境界・整合性・外部境界の設計指針を収録しています。
 
 ## インストール
 
-Node.jsが利用できる端末で、[`skills` CLI](https://github.com/vercel-labs/skills)を実行します。インストールするスキルと、Claude Code、Codex、Cursorなどの利用先を対話形式で選択できます。
+Node.jsが利用できる端末で、[`skills` コマンドラインインターフェース（CLI）](https://github.com/vercel-labs/skills)を実行します。インストールするスキルと、Claude Code、Codex、Cursorなどの利用先を対話形式で選択できます。
 
 ```bash
 npx skills add Niyokee/my-skills -g
@@ -23,7 +23,7 @@ npx skills list -g
 GitHubに公開された最新版へ更新する場合は、次のコマンドを実行します。
 
 ```bash
-npx skills update rdra type-guidelines design-guidelines -g
+npx skills update rdra data-modeling-interview type-guidelines design-guidelines -g
 ```
 
 ## 収録スキル
@@ -31,14 +31,16 @@ npx skills update rdra type-guidelines design-guidelines -g
 | スキル | 配置場所 | 用途 |
 | --- | --- | --- |
 | `rdra` | [`skills/rdra`](skills/rdra) | 要求、業務、ユースケース、情報、状態の関係を整理し、要件の抜け漏れや矛盾を確認します。 |
+| `data-modeling-interview` | [`skills/data-modeling-interview`](skills/data-modeling-interview) | 関係者への対話から概念データモデルを作り、データベース設計への変換、レビュー、設計指針の策定を行います。 |
 | `type-guidelines` | [`skills/type-guidelines`](skills/type-guidelines) | 業務上の不変条件を、制約付きの値、状態、集約型、ワークフローの型として設計またはレビューします。 |
 | `design-guidelines` | [`skills/design-guidelines`](skills/design-guidelines) | 集約境界、更新責任、トランザクション、結果整合性、ドメインと外部との境界を設計またはレビューします。 |
 
-3種類のスキルは、次の範囲を担当します。
+4種類のスキルは、次の範囲を担当します。
 
 1. `rdra` が、システムに必要な価値、業務、ユースケース、情報、状態を明らかにします。
-2. `type-guidelines` が、明らかになった業務規則のうち、値、状態、集約、ワークフローの型で保証できる範囲を扱います。
-3. `design-guidelines` が、永続化、外部との変換、複数集約の連携を含む、実行時の整合性を扱います。
+2. `data-modeling-interview` が、業務上の情報構造と制約を対話で明らかにし、概念データモデルから論理・物理データベース設計へ変換します。
+3. `type-guidelines` が、明らかになった業務規則のうち、値、状態、集約、ワークフローの型で保証できる範囲を扱います。
+4. `design-guidelines` が、永続化、外部との変換、複数集約の連携を含む、実行時の整合性を扱います。
 
 ## 使い方
 
@@ -52,6 +54,10 @@ npx skills update rdra type-guidelines design-guidelines -g
 
 ```text
 $rdra を使って、受注管理システムの要件を整理してください。
+```
+
+```text
+$data-modeling-interview を使って、受注業務の具体例から概念データモデルを作成してください。
 ```
 
 ```text
@@ -74,6 +80,10 @@ Claude Codeでは、スラッシュコマンドとして指定します。
 my-skills/
 └── skills/
     ├── design-guidelines/
+    │   ├── SKILL.md
+    │   ├── agents/openai.yaml
+    │   └── references/
+    ├── data-modeling-interview/
     │   ├── SKILL.md
     │   ├── agents/openai.yaml
     │   └── references/
