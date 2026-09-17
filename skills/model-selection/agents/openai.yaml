@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Selection"
+  short_description: "用途固有の評価基準からAIモデルを比較し、採用候補と検証計画を決める"
+  default_prompt: "$model-selection を使って、用途と制約に合うAIモデルの候補を比較し、推奨と検証計画を示してください。"
