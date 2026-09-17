@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Eval Data Design"
+  short_description: "LLM評価用の合成データ、層別化、件数、採点方法を設計する"
+  default_prompt: "$llm-eval-data-design を使って、リリース前のLLMアプリケーションに必要な評価データ、層別化、件数、採点方法を設計してください。"

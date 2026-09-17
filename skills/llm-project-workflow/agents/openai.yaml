@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLMプロジェクト進行"
+  short_description: "実データと評価を起点にLLM/RAGプロジェクトを段階的に進める"
+  default_prompt: "$llm-project-workflow を使って、実データ、既存アプリ、評価データセットから始めるLLM/RAGプロジェクトの進行計画を作成してください。"
