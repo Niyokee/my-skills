@@ -1,0 +1,4 @@
+interface:
+  display_name: "Logical Thinking"
+  short_description: "観察・洞察と根拠・方法の論理パターンで整理・レビューする"
+  default_prompt: "$logical-thinking を使って、この提案書の観察と洞察を分け、結論の根拠と実行方法の論理構造を整理・レビューしてください。"
